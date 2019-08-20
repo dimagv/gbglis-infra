@@ -42,8 +42,7 @@ EOF
 service_hook_data
 echo $HOOK_URL
 
-HOOK_ID=curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL | jq -r '.id'
-
+HOOK_ID=$(curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL | jq -r '.id')
 echo $HOOK_ID
 
 #cd /home/ironjab/gbgliscicd
