@@ -42,7 +42,7 @@ echo $HOOK_URL
 
 sudo apt update && sudo apt install jq -y
 
-HOOK_ID=$(curl -s -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL | jq -r '.id')
+HOOK_ID=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL | jq -r '.id')
 echo $HOOK_ID
 
 #cd /home/ironjab/gbgliscicd
