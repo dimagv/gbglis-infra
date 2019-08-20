@@ -14,7 +14,7 @@ echo "up branch: ${BRANCH}"
 echo "username: ${USERNAME}"
 echo "password: ${PAT}"
 
-apt update && apt install jq -y
+sudo apt update && sudo apt install jq -y
 
 service_hook_data() {
   cat <<EOF
