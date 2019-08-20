@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "up"
+echo "up branch: $1"
