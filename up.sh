@@ -40,7 +40,7 @@ EOF
 service_hook_data
 echo $HOOK_URL
 
-curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL
+curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL --location
 
 
 #cd /home/ironjab/gbgliscicd
