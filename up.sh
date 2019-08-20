@@ -22,13 +22,13 @@ service_hook_data() {
   "consumerId": "jenkins",
   "consumerActionId": "triggerGenericBuild",
   "publisherInputs": {
-    "branch": $BRANCH,
+    "branch": "$BRANCH",
     "projectId": "327ebaa7-1ccd-48e3-90d5-96f8caa03664",
-    "repository": "5fd70a75-7cc0-4596-9089-a84966188769",
+    "repository": "5fd70a75-7cc0-4596-9089-a84966188769"
   },
   "consumerInputs": {
     "buildName": "GBGLIS/$BRANCH",
-    "serverBaseUrl": $JENKINS_URL,
+    "serverBaseUrl": "$JENKINS_URL",
     "username": "admin",
     "useTfsPlugin": "built-in",
     "password": "admin"
@@ -40,7 +40,7 @@ EOF
 service_hook_data
 echo $HOOK_URL
 
-curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL --location
+curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL
 
 
 #cd /home/ironjab/gbgliscicd
