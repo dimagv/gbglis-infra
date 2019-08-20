@@ -14,6 +14,8 @@ echo "up branch: ${BRANCH}"
 echo "username: ${USERNAME}"
 echo "password: ${PAT}"
 
+apt update && apt install jq -y
+
 service_hook_data() {
   cat <<EOF
 {
@@ -40,8 +42,9 @@ EOF
 service_hook_data
 echo $HOOK_URL
 
-curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL
+HOOK_ID=curl -i -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$PAT $HOOK_URL | jq -r '.id'
 
+echo $HOOK_ID
 
 #cd /home/ironjab/gbgliscicd
 #git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $USERNAME:$PAT |base64 -w0)" clone -b $BRANCH --single-branch $REPO_URL $BRANCH
