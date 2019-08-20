@@ -1,3 +1,8 @@
 #!/bin/bash
 
-echo "up branch: $1"
+BRANCH=$1
+
+echo "up branch: ${BRANCH}"
+
+cd /home/ironjab/gbglis
+git clone -b ${BRANCH} --single-branch http://192.168.160.166:8080/tfs/DMDL/_git/GBGLIS ${BRANCH}
