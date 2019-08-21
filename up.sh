@@ -3,8 +3,9 @@
 set -e 
 
 BRANCH=$1
-TFS_USER=$2
-TFS_TOKEN=$3
+DOMAIN=$2
+TFS_USER=$3
+TFS_TOKEN=$4
 
 JENKINS_TOKEN="11843f2e9da9e2dfa8c5559c1a259e5b11"
 JENKINS_USER="admin"
@@ -14,6 +15,7 @@ BASE_URL="http://192.168.160.166:8080/tfs/DMDL/"
 REPO_URL="${BASE_URL}_git/GBGLIS"
 HOOK_URL="${BASE_URL}_apis/hooks/subscriptions"
 GBGLIS_DIR="/home/ironjab/gbgliscicd"
+NGINX_DIR="/home/ironjab/nginx/conf.d"
 
 echo "[0] UP START"
 
@@ -56,7 +58,8 @@ cp .env.sample .env
 sed -i -e "s@{{BRANCH_NAME}}@${BRANCH}@g" .env
 for SEDVAR in WEB_HOST_PORT API_HOST_PORT IDENTITY_HOST_PORT
 do
-    sed -i -e "s@{{$SEDVAR}}@$(random_port)@g" .env
+    eval "$SEDVAR=$(random_port)"
+    sed -i -e "s@{{$SEDVAR}}@$(eval \$$SEDVAR)@g" .env
 done
 cat .env
 
@@ -84,7 +87,26 @@ echo "[2] OK"
 
 # [4] CONFIGURE GLOBAL NGINX
 #############################################################################################
+create_nginx_config() {
+    local SN_PREFIX=$1
+    local PORT=$2
 
+    local SERVER_NAME=$SN_PREFIX.$DOMAIN
+    local CONF="$NGINX_DIR/$SERVER_NAME.conf"
+
+    cp /tmp/infra/nginx/default.conf $CONF
+
+    sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $CONF
+    sed -i -e "s@{{SERVER_NAME}}@${SERVER_NAME}@g" $CONF
+    sed -i -e "s@{{PORT}}@${PORT}@g" $CONF
+}
+
+create_nginx_config $BRANCH $WEB_HOST_PORT
+create_nginx_config $BRANCH-api $API_HOST_PORT
+create_nginx_config $BRANCH-identity $IDENTITY_HOST_PORT
+
+ls -la $NGINX_DIR
+cat "$NGINX_DIR/$BRANCH.$DOMAIN.conf"
 #############################################################################################
 
 # [5] CREATE SERVICE HOOK
