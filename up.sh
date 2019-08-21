@@ -16,6 +16,7 @@ REPO_URL="${BASE_URL}_git/GBGLIS"
 HOOK_URL="${BASE_URL}_apis/hooks/subscriptions"
 GBGLIS_DIR="/home/ironjab/gbgliscicd"
 NGINX_DIR="/home/ironjab/nginx/conf.d"
+NGINX_CONTAINER_NAME="global-nginx"
 
 echo "[0] UP START"
 
@@ -116,6 +117,9 @@ echo "[4] Creating API config"
 create_nginx_config $BRANCH-api $API_HOST_PORT
 echo "[4] Creating IDENTITY config"
 create_nginx_config $BRANCH-identity $IDENTITY_HOST_PORT
+
+echo "[4] Restarting nginx"
+docker kill -s HUP $NGINX_CONTAINER_NAME
 
 echo "[4] OK"
 #############################################################################################
