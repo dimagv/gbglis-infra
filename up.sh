@@ -18,22 +18,22 @@ echo "UP START"
 # [1] CHECK JOB
 #############################################################################################
 GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
-echo "Сhecking existence of the job: $GBGLIS_JOB"
+echo "[1] Сhecking existence of the job: $GBGLIS_JOB"
 JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_PASS)
 if [[ $JOB_STATUS_CODE -eq 404 ]]; then
-    echo "Job doesn't exist: $GBGLIS_JOB"
+    echo "[1] Job doesn't exist: $GBGLIS_JOB"
     exit 1
 fi
-echo "OK"
+echo "[1] OK"
 #############################################################################################
 
 # [2] PREPARE DIR
 #############################################################################################
-echo "Preparing branch dir: $GBGLIS_DIR/$BRANCH"
+echo "[2] Preparing branch dir: $GBGLIS_DIR/$BRANCH"
 git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" clone -b $BRANCH --single-branch $REPO_URL "$GBGLIS_DIR/$BRANCH"
 cd "$GBGLIS_DIR/$BRANCH"
 ls -la
-echo "OK"
+echo "[2] OK"
 #############################################################################################
 
 # [3] TRIGGER JOB
@@ -55,7 +55,12 @@ echo "OK"
 # echo ""
 #############################################################################################
 
-# [4] CREATE SERVICE HOOK
+# [4] CONFIGURE GLOBAL NGINX
+#############################################################################################
+
+#############################################################################################
+
+# [5] CREATE SERVICE HOOK
 #############################################################################################
 service_hook_data() {
   cat <<EOF
