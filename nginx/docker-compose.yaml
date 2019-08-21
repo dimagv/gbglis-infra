@@ -5,6 +5,7 @@ services:
     container_name: global-nginx
     volumes:
       - ./conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"
