@@ -59,7 +59,7 @@ sed -i -e "s@{{BRANCH_NAME}}@${BRANCH}@g" .env
 for SEDVAR in WEB_HOST_PORT API_HOST_PORT IDENTITY_HOST_PORT
 do
     eval "$SEDVAR=$(random_port)"
-    sed -i -e "s@{{$SEDVAR}}@$(eval \$$SEDVAR)@g" .env
+    sed -i -e "s@{{$SEDVAR}}@$(eval echo \$$SEDVAR)@g" .env
 done
 cat .env
 
