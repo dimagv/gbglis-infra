@@ -32,6 +32,12 @@ echo "[1] OK"
 # [2] PREPARE DIR
 #############################################################################################
 echo "[2] Preparing branch dir: $GBGLIS_DIR/$BRANCH"
+
+if [ -d "$GBGLIS_DIR/$BRANCH" ]; then
+    echo "[2] Branch dir already exists: $GBGLIS_DIR/$BRANCH"
+    exit 1
+fi
+
 git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" clone -b $BRANCH --single-branch $REPO_URL "$GBGLIS_DIR/$BRANCH"
 cd "$GBGLIS_DIR/$BRANCH"
 ls -la
