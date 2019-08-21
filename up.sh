@@ -33,14 +33,32 @@ echo "[1] OK"
 #############################################################################################
 echo "[2] Preparing branch dir: $GBGLIS_DIR/$BRANCH"
 
+random_port() {
+    read LOWERPORT UPPERPORT < /proc/sys/net/ipv4/ip_local_port_range
+    while :
+    do
+        PORT="`shuf -i $LOWERPORT-$UPPERPORT -n 1`"
+        ss -lpn | grep -q ":$PORT " || break
+    done
+    echo $PORT
+}
+
+RANDOMPORT=$(random_port)
+echo $RANDOMPORT
+
 if [ -d "$GBGLIS_DIR/$BRANCH" ]; then
-    echo "[2] Branch dir already exists: $GBGLIS_DIR/$BRANCH"
+    echo "[2] Dir already exists: $GBGLIS_DIR/$BRANCH"
     exit 1
 fi
 
 git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" clone -b $BRANCH --single-branch $REPO_URL "$GBGLIS_DIR/$BRANCH"
 cd "$GBGLIS_DIR/$BRANCH"
+
 ls -la
+cp .env.sample .env
+sed -i -e "s@{{BRANCH_NAME}}@${BRANCH}@g" .env
+
+
 echo "[2] OK"
 #############################################################################################
 
