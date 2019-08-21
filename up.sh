@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e 
+
 BRANCH=$1
 TFS_USER=$2
 TFS_TOKEN=$3
