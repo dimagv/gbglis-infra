@@ -15,7 +15,7 @@ REPO_URL="${BASE_URL}_git/GBGLIS"
 HOOK_URL="${BASE_URL}_apis/hooks/subscriptions"
 GBGLIS_DIR="/home/ironjab/gbgliscicd"
 
-echo "UP START"
+echo "[0] UP START"
 
 # [1] CHECK JOB
 #############################################################################################
@@ -96,4 +96,4 @@ EOF
 # curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$TFS_TOKEN $HOOK_URL
 #############################################################################################
 
-echo "UP DONE"
+echo "[0] UP DONE"
