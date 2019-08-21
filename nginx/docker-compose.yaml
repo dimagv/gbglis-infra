@@ -2,6 +2,7 @@ version: '2.2'
 services:
   nginx:
     image: nginx
+    container_name: global-nginx
     volumes:
       - ./conf.d:/etc/nginx/conf.d
     ports:
