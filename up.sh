@@ -43,21 +43,22 @@ random_port() {
     echo $PORT
 }
 
-RANDOMPORT=$(random_port)
-echo $RANDOMPORT
-
 if [ -d "$GBGLIS_DIR/$BRANCH" ]; then
     echo "[2] Dir already exists: $GBGLIS_DIR/$BRANCH"
     exit 1
 fi
 
 git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" clone -b $BRANCH --single-branch $REPO_URL "$GBGLIS_DIR/$BRANCH"
-cd "$GBGLIS_DIR/$BRANCH"
 
+cd "$GBGLIS_DIR/$BRANCH"
 ls -la
 cp .env.sample .env
 sed -i -e "s@{{BRANCH_NAME}}@${BRANCH}@g" .env
-
+for SEDVAR in WEB_HOST_PORT API_HOST_PORT IDENTITY_HOST_PORT
+do
+    sed -i -e "s@{{$SEDVAR}}@$(random_port)@g" .env
+done
+cat .env
 
 echo "[2] OK"
 #############################################################################################
