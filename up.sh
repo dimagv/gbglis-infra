@@ -61,7 +61,10 @@ do
     eval "$SEDVAR=$(random_port)"
     sed -i -e "s@{{$SEDVAR}}@$(eval echo \$$SEDVAR)@g" .env
 done
+
+echo "[2] .env:"
 cat .env
+echo ""
 
 echo "[2] OK"
 #############################################################################################
@@ -87,6 +90,8 @@ echo "[2] OK"
 
 # [4] CONFIGURE GLOBAL NGINX
 #############################################################################################
+echo "[4] Configuring global nginx"
+
 create_nginx_config() {
     local SN_PREFIX=$1
     local PORT=$2
@@ -99,14 +104,20 @@ create_nginx_config() {
     sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $CONF
     sed -i -e "s@{{SERVER_NAME}}@${SERVER_NAME}@g" $CONF
     sed -i -e "s@{{PORT}}@${PORT}@g" $CONF
+
+    echo "[4] $CONF:"
+    cat $CONF
+    echo ""
 }
 
+echo "[4] Creating WEB config"
 create_nginx_config $BRANCH $WEB_HOST_PORT
+echo "[4] Creating API config"
 create_nginx_config $BRANCH-api $API_HOST_PORT
+echo "[4] Creating IDENTITY config"
 create_nginx_config $BRANCH-identity $IDENTITY_HOST_PORT
 
-ls -la $NGINX_DIR
-cat "$NGINX_DIR/$BRANCH.$DOMAIN.conf"
+echo "[4] OK"
 #############################################################################################
 
 # [5] CREATE SERVICE HOOK
