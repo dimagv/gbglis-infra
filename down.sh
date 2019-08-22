@@ -55,7 +55,7 @@ apt update -qq && apt install -y -qq jq
 remove_hook() {
     local HOOK_ID=$1
     echo "Removing hook: $HOOK_ID"
-    STATUS_CODE=`curl -XDELETE -H "Accept: api-version=1.0" --write-out %{http_code} --silent --output /dev/null -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID`
+    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
     if [[ $STATUS_CODE -eq 204 ]]; then
             echo "Hook '$HOOK_ID' successfully removed"
     else
