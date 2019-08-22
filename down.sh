@@ -9,3 +9,4 @@ echo "down branch: $1"
 #   4.1 list all hooks
 #   4.2 search by .publisherInputs.branch
 #   4.3 remove
+# 5 remove nginx conf / restart
