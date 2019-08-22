@@ -9,7 +9,7 @@ TFS_TOKEN=$4
 
 JENKINS_TOKEN="11843f2e9da9e2dfa8c5559c1a259e5b11"
 JENKINS_USER="admin"
-JENKINS_PASS="admin"
+#JENKINS_PASS="admin"
 JENKINS_URL="http://192.168.161.240:8320"
 BASE_URL="http://192.168.160.166:8080/tfs/DMDL/"
 REPO_URL="${BASE_URL}_git/GBGLIS"
@@ -24,7 +24,7 @@ echo "[0] UP START"
 # [1] CHECK JOB
 #############################################################################################
 echo "[1] Сhecking existence of the job: $GBGLIS_JOB"
-JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_PASS)
+JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_TOKEN)
 if [[ $JOB_STATUS_CODE -eq 404 ]]; then
     echo "[1] Job doesn't exist: $GBGLIS_JOB"
     exit 1
@@ -83,7 +83,7 @@ echo "[3] Starting Job:$GBGLIS_JOB with Build number: $GBGLIS_JOB_BUILD_ID"
 # Wait until the build is up and running
 echo -n "[3] Waiting up and running"
 while true; do
-        GBGLIS_JOB_STATUS_CODE=`curl --write-out %{http_code} --silent --output /dev/null $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json`
+        GBGLIS_JOB_STATUS_CODE=`curl --write-out %{http_code} --silent --output /dev/null $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN`
         if [[ $GBGLIS_JOB_STATUS_CODE -eq 404 ]]; then
                 echo -n "."
                 sleep 2
@@ -95,7 +95,7 @@ echo ""
 
 echo -n "[3] Waiting completion"
 while true; do
-        GBGLIS_JOB_RUNNING=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json 2> /dev/null | jq '.building'`
+        GBGLIS_JOB_RUNNING=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.building'`
         if [ "$GBGLIS_JOB_RUNNING" == "true" ]; then
                 echo -n "." 
                 sleep 2
@@ -105,7 +105,7 @@ while true; do
 done
 echo ""
 
-GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json 2> /dev/null | jq '.result'`
+GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.result'`
 if [ "$GBGLIS_JOB_STATUS" != "SUCCESS" ]; then
     echo "[3] Job failed, status: $GBGLIS_JOB_STATUS"
     exit 1
@@ -168,7 +168,7 @@ service_hook_data() {
     "serverBaseUrl": "$JENKINS_URL",
     "username": "$JENKINS_USER",
     "useTfsPlugin": "built-in",
-    "password": "$JENKINS_PASS"
+    "password": "$JENKINS_TOKEN"
   },
 }
 EOF
