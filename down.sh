@@ -65,7 +65,7 @@ remove_hook() {
 }
 
 export -f remove_hook
-curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
+curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c -r --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
 
 echo "[3] OK"
 #############################################################################################
