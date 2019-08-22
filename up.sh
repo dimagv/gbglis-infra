@@ -74,7 +74,7 @@ echo "[2] OK"
 #############################################################################################
 echo "[3] Triggering job: $GBGLIS_JOB"
 
-apt update && apt install -y jq
+apt update -qq && apt install -y -qq jq
 
 GBGLIS_JOB_BUILD_ID=`curl -X GET $GBGLIS_JOB/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.nextBuildNumber'`
 curl -X POST "$GBGLIS_JOB/build" -u $JENKINS_USER:$JENKINS_TOKEN
