@@ -150,6 +150,8 @@ echo "[4] OK"
 
 # [5] CREATE SERVICE HOOK
 #############################################################################################
+echo "[5] Creating TFS service hook"
+
 service_hook_data() {
   cat <<EOF
 {
@@ -173,7 +175,12 @@ service_hook_data() {
 EOF
 }
 
-# curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$TFS_TOKEN $HOOK_URL
+HOOK_STATUS_CODE=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$TFS_TOKEN $HOOK_URL)
+if [[ $HOOK_STATUS_CODE -eq 404 ]]; then
+    echo "[5] Can't create service hook: $HOOK_STATUS_CODE"
+    exit 1
+fi
+echo "[5] OK"
 #############################################################################################
 
 echo "[0] UP DONE"
