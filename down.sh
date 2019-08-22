@@ -59,6 +59,8 @@ echo "[3] Removing TFS service hooks for: $BRANCH"
 
 apt update -qq && apt install -y -qq jq
 
+echo $BRANCH
+
 HOOKS=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c '.value[] | select(.publisherInputs.branch | contains("$BRANCH")) | .id')
 echo "HOOKS: $HOOKS"
 
