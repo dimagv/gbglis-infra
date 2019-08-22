@@ -94,7 +94,7 @@ echo ""
 
 echo -n "[3] Waiting completion"
 while true; do
-        GBGLIS_JOB_RUNNING=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.building'`
+        GBGLIS_JOB_RUNNING=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq -r '.building'`
         if [ "$GBGLIS_JOB_RUNNING" == "true" ]; then
                 echo -n "." 
                 sleep 2
