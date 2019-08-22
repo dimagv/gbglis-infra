@@ -39,9 +39,9 @@ echo "[2] Removing WEB config: $NGINX_DIR/$BRANCH.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH.$DOMAIN.conf
 echo "[2] Removing API config: $NGINX_DIR/$BRANCH-api.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH-api.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH-api.$DOMAIN.conf
-echo "[2] Removing IDENTITY config"
+echo "[2] Removing IDENTITY config: $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf
-echo "[2] Restarting nginx: $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf"
+echo "[2] Restarting nginx"
 docker kill -s HUP $NGINX_CONTAINER_NAME
 echo "[2] OK"
 #############################################################################################
@@ -56,7 +56,7 @@ remove_hook() {
     local HOOK_ID=$1
     echo "Removing hook: $HOOK_ID"
     STATUS_CODE=`curl -XDELETE -H "Accept: api-version=1.0" --write-out %{http_code} --silent --output /dev/null -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID`
-    if [[ $STATUS_CODE -eq 203 ]]; then
+    if [[ $STATUS_CODE -eq 204 ]]; then
             echo "Hook '$HOOK_ID' successfully removed"
     else
             echo "Hook '$HOOK_ID' didn't remove, status code: $STATUS_CODE"
