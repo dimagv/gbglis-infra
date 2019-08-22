@@ -68,7 +68,7 @@ remove_hook() {
 # curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
 HOOK_IDS=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '[ .value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id ]')
 echo $HOOK_IDS
-for HOOK_ID in $(jq -r ".[]" $HOOK_IDS); do
+for HOOK_ID in $(echo $HOOK_IDS | jq -r ".[]"); do
     echo $HOOK_ID
 done
 
