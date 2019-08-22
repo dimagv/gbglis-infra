@@ -66,8 +66,9 @@ asdf() {
 echo $BRANCH
 echo "curl -s -H \"Accept: application/json; api-version=1.0\" -H \"Content-Type:application/json\" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c '[ .value[] | select(.publisherInputs.branch | contains(\"$BRANCH\")) | .id ]'"
 
-export -f asdf
-curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c '[ .value[] | select(.publisherInputs.branch | contains("$BRANCH")) | .id ]' |xargs -n1 bash -c 'asdf "$@"' _
+# export -f asdf
+# curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c '[ .value[] | select(.publisherInputs.branch | contains("$BRANCH")) | .id ]' |xargs -n1 bash -c 'asdf "$@"' _
+curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq .
 # echo "HOOKS: $HOOKS"
 
 
