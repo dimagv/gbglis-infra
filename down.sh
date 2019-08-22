@@ -57,6 +57,7 @@ remove_hook() {
     echo "Removing hook: $HOOK_ID"
     # STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
     echo $HOOK_URL/$HOOK_ID
+    echo $TFS_TOKEN
     curl -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID
     if [[ $STATUS_CODE -eq 204 ]]; then
             echo "Hook '$HOOK_ID' successfully removed"
