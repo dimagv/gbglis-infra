@@ -104,7 +104,7 @@ while true; do
 done
 echo ""
 
-GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.result'`
+GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq -r '.result'`
 if [ "$GBGLIS_JOB_STATUS" != "SUCCESS" ]; then
     echo "[3] Job failed, status: $GBGLIS_JOB_STATUS"
     exit 1
