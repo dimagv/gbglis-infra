@@ -55,7 +55,8 @@ apt update -qq && apt install -y -qq jq
 remove_hook() {
     local HOOK_ID=$1
     echo "Removing hook: $HOOK_ID"
-    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
+    # STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
+    curl -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID
     if [[ $STATUS_CODE -eq 204 ]]; then
             echo "Hook '$HOOK_ID' successfully removed"
     else
@@ -65,7 +66,7 @@ remove_hook() {
 }
 
 export -f remove_hook
-curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c -r --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
+curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
 
 echo "[3] OK"
 #############################################################################################
