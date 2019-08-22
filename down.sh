@@ -53,7 +53,7 @@ echo "[3] Removing TFS service hooks for: $BRANCH"
 apt update -qq && apt install -y -qq jq
 
 remove_hook() {
-    HOOK_ID=$1
+    local HOOK_ID=$1
     echo "Removing hook: $HOOK_ID"
     STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
     if [[ $STATUS_CODE -eq 204 ]]; then
@@ -67,9 +67,8 @@ remove_hook() {
 # export -f remove_hook
 # curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
 HOOK_IDS=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '[ .value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id ]')
-echo $HOOK_IDS
 for HOOK_ID in $(echo $HOOK_IDS | jq -r ".[]"); do
-    echo $HOOK_ID
+    remove_hook $HOOK_ID
 done
 
 echo "[3] OK"
