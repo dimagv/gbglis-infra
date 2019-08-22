@@ -17,12 +17,12 @@ HOOK_URL="${BASE_URL}_apis/hooks/subscriptions"
 GBGLIS_DIR="/home/ironjab/gbgliscicd"
 NGINX_DIR="/home/ironjab/nginx/conf.d"
 NGINX_CONTAINER_NAME="global-nginx"
+GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
 
 echo "[0] UP START"
 
 # [1] CHECK JOB
 #############################################################################################
-GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
 echo "[1] Сhecking existence of the job: $GBGLIS_JOB"
 JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_PASS)
 if [[ $JOB_STATUS_CODE -eq 404 ]]; then
@@ -72,21 +72,46 @@ echo "[2] OK"
 
 # [3] TRIGGER JOB
 #############################################################################################
-# execute, works only with token
-# curl -X POST http://192.168.161.240:8320/job/GBGLIS/job/develop_cicd_ironjab/build -u admin:11843f2e9da9e2dfa8c5559c1a259e5b11
+echo "[3] Triggering job: $GBGLIS_JOB"
 
-#Wait until the build is up and running
-# echo -n "Waiting"
-# while true; do
-#         STATUS_CODE=`curl --write-out %{http_code} --silent --output /dev/null  http://jenkins.minikube.io/job/$JOB/$BUILD_ID/api/json`
-#         if [[ $STATUS_CODE -eq 404 ]]; then
-#                 echo -n "."
-#                 sleep 2
-#         else
-#                 break
-#         fi
-# done
-# echo ""
+apt update && apt install -y jq
+
+GBGLIS_JOB_BUILD_ID=`curl -X GET $GBGLIS_JOB/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.nextBuildNumber'`
+curl -X POST "$GBGLIS_JOB/build" -u $JENKINS_USER:$JENKINS_TOKEN
+echo "[3] Starting Job:$GBGLIS_JOB with Build number: $GBGLIS_JOB_BUILD_ID"
+
+# Wait until the build is up and running
+echo -n "[3] Waiting up and running"
+while true; do
+        GBGLIS_JOB_STATUS_CODE=`curl --write-out %{http_code} --silent --output /dev/null $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json`
+        if [[ $GBGLIS_JOB_STATUS_CODE -eq 404 ]]; then
+                echo -n "."
+                sleep 2
+        else
+                break
+        fi
+done
+echo ""
+
+echo -n "[3] Waiting completion"
+while true; do
+        GBGLIS_JOB_RUNNING=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json 2> /dev/null | jq '.building'`
+        if [ "$GBGLIS_JOB_RUNNING" == "true" ]; then
+                echo -n "." 
+                sleep 2
+        else
+                break
+        fi
+done
+echo ""
+
+GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json 2> /dev/null | jq '.result'`
+if [ "$GBGLIS_JOB_STATUS" != "SUCCESS" ]; then
+    echo "[3] Job failed, status: $GBGLIS_JOB_STATUS"
+    exit 1
+fi
+
+echo "[3] OK"
 #############################################################################################
 
 # [4] CONFIGURE GLOBAL NGINX
