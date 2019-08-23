@@ -123,7 +123,7 @@ create_nginx_config() {
     local SERVER_NAME=$SN_PREFIX.$DOMAIN
     local CONF="$NGINX_DIR/$SERVER_NAME.conf"
 
-    cp /tmp/infra/nginx/default.conf $CONF
+    cp /tmp/up/nginx/default.conf $CONF
 
     sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $CONF
     sed -i -e "s@{{SERVER_NAME}}@${SERVER_NAME}@g" $CONF
