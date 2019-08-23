@@ -15,19 +15,33 @@ HOOK_URL="${BASE_URL}_apis/hooks/subscriptions"
 
 echo "[0] DOWN START"
 
-# [1] STOP/REMOVE APP
+# [1] REMOVE TFS SERVICE HOOKS
 #############################################################################################
-echo "[1] Stopping app for: $BRANCH"
+echo "[1] Removing TFS service hooks for: $BRANCH"
 
-if [ -d $GBGLIS_DIR ]; then
-    cd $GBGLIS_DIR
-    echo "[1] running docker-compose down, pwd: $PWD"
-    [ -f $GBGLIS_DIR/docker-compose.* ] && docker-compose down
-    echo "[1] Removing app dir: $GBGLIS_DIR"
-    rm -rf $GBGLIS_DIR
-else
-    echo "[1] Skipped. Dir: $GBGLIS_DIR does not exists"
-fi
+apt update -qq && apt install -y -qq jq
+
+remove_hook() {
+    local HOOK_ID=$1
+    echo "[1] Removing hook: $HOOK_ID"
+    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
+    if [[ $STATUS_CODE -eq 204 ]]; then
+        echo "[1] Hook '$HOOK_ID' successfully removed"
+    else
+        echo "[1] Hook '$HOOK_ID' didn't remove, status code: $STATUS_CODE"
+        exit 1
+    fi
+}
+
+echo "[1] Finding hooks for: $BRANCH"
+# export -f remove_hook
+# curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
+HOOK_IDS=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '[ .value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id ]')
+
+echo "[1] Found hooks ids: $HOOK_IDS"
+for HOOK_ID in $(echo $HOOK_IDS | jq -r ".[]"); do
+    remove_hook $HOOK_ID
+done
 
 echo "[1] OK"
 #############################################################################################
@@ -46,30 +60,19 @@ docker kill -s HUP $NGINX_CONTAINER_NAME
 echo "[2] OK"
 #############################################################################################
 
-# [3] REMOVE TFS SERVICE HOOKS
+# [3] STOP/REMOVE APP
 #############################################################################################
-echo "[3] Removing TFS service hooks for: $BRANCH"
+echo "[3] Stopping app for: $BRANCH"
 
-apt update -qq && apt install -y -qq jq
-
-remove_hook() {
-    local HOOK_ID=$1
-    echo "Removing hook: $HOOK_ID"
-    STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -XDELETE -H "Accept: api-version=1.0" -u :$TFS_TOKEN $HOOK_URL/$HOOK_ID)
-    if [[ $STATUS_CODE -eq 204 ]]; then
-        echo "Hook '$HOOK_ID' successfully removed"
-    else
-        echo "Hook '$HOOK_ID' didn't remove, status code: $STATUS_CODE"
-        exit 1
-    fi
-}
-
-# export -f remove_hook
-# curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '.value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id' |xargs -n1 bash -c 'remove_hook "$@"' _
-HOOK_IDS=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" -XGET -u :$TFS_TOKEN $HOOK_URL | jq -c --arg BRANCH "$BRANCH" '[ .value[] | select(.publisherInputs.branch | contains($BRANCH)) | .id ]')
-for HOOK_ID in $(echo $HOOK_IDS | jq -r ".[]"); do
-    remove_hook $HOOK_ID
-done
+if [ -d $GBGLIS_DIR ]; then
+    cd $GBGLIS_DIR
+    echo "[3] running docker-compose down, pwd: $PWD"
+    [ -f $GBGLIS_DIR/docker-compose.* ] && docker-compose down
+    echo "[3] Removing app dir: $GBGLIS_DIR"
+    rm -rf $GBGLIS_DIR
+else
+    echo "[3] Skipped. Dir: $GBGLIS_DIR does not exists"
+fi
 
 echo "[3] OK"
 #############################################################################################
