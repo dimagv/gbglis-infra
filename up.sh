@@ -20,8 +20,6 @@ GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
 
 echo "[0] UP START"
 
-exit 1
-
 # [1] CHECK JOB
 #############################################################################################
 echo "[1] Сhecking existence of the job: $GBGLIS_JOB"
