@@ -17,6 +17,8 @@ GBGLIS_DIR="/home/ironjab/gbglis"
 NGINX_DIR="/home/ironjab/nginx/conf.d"
 NGINX_CONTAINER_NAME="global-nginx"
 GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
+INFRA_DIR="/tmp/up"
+
 
 echo "[0] UP START"
 
@@ -123,7 +125,7 @@ create_nginx_config() {
     local SERVER_NAME=$SN_PREFIX.$DOMAIN
     local CONF="$NGINX_DIR/$SERVER_NAME.conf"
 
-    cp /tmp/up/nginx/default.conf $CONF
+    cp "$INFRA_DIR/nginx/default.conf" $CONF
 
     sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $CONF
     sed -i -e "s@{{SERVER_NAME}}@${SERVER_NAME}@g" $CONF
