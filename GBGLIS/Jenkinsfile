@@ -45,7 +45,8 @@ pipeline {
                 stage('Build/Push WEB') {
                     steps {
                         script {
-                            docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "--build-arg DOMAIN=${DOMAIN} --build-arg BRANCH=${env.BRANCH_NAME} ./LIS.Web")
+                            // docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "--build-arg DOMAIN=${DOMAIN} --build-arg BRANCH=${env.BRANCH_NAME} ./LIS.Web")
+                            docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "./LIS.Web")
                         }
                     }
                 }

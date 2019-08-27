@@ -5,11 +5,11 @@ COPY package.json /app/package.json
 RUN npm install
 COPY . /app
 
-ARG BRANCH
-ARG DOMAIN
-RUN cp src/environments/environment.feature.ts.tmpl src/environments/environment.feature.ts \
-    && sed -i -e "s@{{BRANCH}}@${BRANCH}@g" src/environments/environment.feature.ts \
-    && sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" src/environments/environment.feature.ts
+# ARG BRANCH
+# ARG DOMAIN
+# RUN cp src/environments/environment.feature.ts.tmpl src/environments/environment.feature.ts \
+#     && sed -i -e "s@{{BRANCH}}@${BRANCH}@g" src/environments/environment.feature.ts \
+#     && sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" src/environments/environment.feature.ts
 RUN ./node_modules/@angular/cli/bin/ng build --prod -c feature
 
 FROM dimag/nginx:web
