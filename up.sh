@@ -72,6 +72,7 @@ if [ ! -f $WEBENV_FILE ] || ! grep -q https://$BRANCH.$DOMAIN $WEBENV_FILE; then
   cp "$INFRA_DIR/GBGLIS/$WEBENV_FILE.tmpl" $WEBENV_FILE
   sed -i -e "s@{{BRANCH}}@${BRANCH}@g" $WEBENV_FILE
   sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $WEBENV_FILE
+  git config --global user.email "jenkins@ironjab.com"
   git add $WEBENV_FILE
   git commit -am "[cicd] update web environment.feature.ts"
   git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" push origin $BRANCH
