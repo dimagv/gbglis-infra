@@ -67,6 +67,20 @@ echo "[2] .env:"
 cat .env
 echo ""
 
+WEBENV_FILE="LIS.Web/src/environments/environment.feature.ts"
+if [ ! -f $WEBENV_FILE ] || ! grep -q https://$BRANCH.$DOMAIN $WEBENV_FILE; then
+  cp "$INFRA_DIR/GBGLIS/$WEBENV_FILE.tmpl" $WEBENV_FILE
+  sed -i -e "s@{{BRANCH}}@${BRANCH}@g" $WEBENV_FILE
+  sed -i -e "s@{{DOMAIN}}@${DOMAIN}@g" $WEBENV_FILE
+  git add $WEBENV_FILE
+  git commit -am "[cicd] update web environment.feature.ts"
+  git -c http.extraheader="AUTHORIZATION: Basic $(echo -n $TFS_USER:$TFS_TOKEN |base64 -w0)" push origin $BRANCH
+fi
+
+echo "[2] $WEBENV_FILE:"
+cat $WEBENV_FILE
+echo ""
+
 echo "[2] OK"
 #############################################################################################
 
