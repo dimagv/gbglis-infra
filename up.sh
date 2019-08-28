@@ -92,14 +92,12 @@ echo "[3] Triggering job: $GBGLIS_JOB"
 
 apt update -qq && apt install -y -qq jq
 
-
-
 echo -n "[3] Waiting executors"
 while true; do
         COMPUTER_INFO=`curl -X GET $JENKINS_URL/computer/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null`
         TOTAL_EXECUTORS=`echo $COMPUTER_INFO | jq .totalExecutors`
         BUSY_EXECUTORS=`echo $COMPUTER_INFO | jq .busyExecutors`
-        if [[ $BUSY_EXECUTORS -lt $TOTAL_EXECUTORS ]]; then
+        if [[ $BUSY_EXECUTORS -eq $TOTAL_EXECUTORS ]]; then
                 echo -n "."
                 sleep 5
         else
