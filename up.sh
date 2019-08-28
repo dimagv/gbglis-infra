@@ -92,23 +92,21 @@ echo "[3] Triggering job: $GBGLIS_JOB"
 
 apt update -qq && apt install -y -qq jq
 
-COMPUTER_INFO=`curl -X GET $JENKINS_URL/computer/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null`
-TOTAL_EXECUTORS=`echo $COMPUTER_INFO | jq .totalExecutors`
-echo "total: $TOTAL_EXECUTORS"
-BUSY_EXECUTORS=`echo $COMPUTER_INFO | jq .busyExecutors`
-echo "total: $BUSY_EXECUTORS"
 
-# echo -n "[3] Waiting executors"
-# while true; do
-        
-#         if [[ $GBGLIS_JOB_STATUS_CODE -eq 404 ]]; then
-#                 echo -n "."
-#                 sleep 2
-#         else
-#                 break
-#         fi
-# done
-# echo ""
+
+echo -n "[3] Waiting executors"
+while true; do
+        COMPUTER_INFO=`curl -X GET $JENKINS_URL/computer/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null`
+        TOTAL_EXECUTORS=`echo $COMPUTER_INFO | jq .totalExecutors`
+        BUSY_EXECUTORS=`echo $COMPUTER_INFO | jq .busyExecutors`
+        if [[ $BUSY_EXECUTORS -lt $TOTAL_EXECUTORS ]]; then
+                echo -n "."
+                sleep 5
+        else
+                break
+        fi
+done
+echo ""
 
 GBGLIS_JOB_BUILD_ID=`curl -X GET $GBGLIS_JOB/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.nextBuildNumber'`
 curl -X POST "$GBGLIS_JOB/build" -u $JENKINS_USER:$JENKINS_TOKEN
