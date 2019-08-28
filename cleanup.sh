@@ -28,7 +28,7 @@ if [[ ! $REMOVED_BRANCHES ]]; then
     exit 0
 fi
 
-echo "[cleanup] Need to destroy envs for branches: ${REMOVED_BRANCHES[@]}"
+echo "[cleanup] Need to destroy ENVs for branches: ${REMOVED_BRANCHES[@]}"
 for BRANCH in ${REMOVED_BRANCHES[*]} ; do
     echo "[cleanup] Destroying for: $BRANCH"
     $INFRA_DIR/down.sh $BRANCH $DOMAIN $TFS_USER $TFS_TOKEN

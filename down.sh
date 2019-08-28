@@ -47,11 +47,11 @@ done
 # [2] REMOVE NGINX CONFS
 #############################################################################################
 echo "[down] Removing nginx confs for: $BRANCH"
-echo "[down] Removing WEB config: $NGINX_DIR/$BRANCH.$DOMAIN.conf"
+echo "[down] Removing WEB nginx config: $NGINX_DIR/$BRANCH.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH.$DOMAIN.conf
-echo "[down] Removing API config: $NGINX_DIR/$BRANCH-api.$DOMAIN.conf"
+echo "[down] Removing API nginx config: $NGINX_DIR/$BRANCH-api.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH-api.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH-api.$DOMAIN.conf
-echo "[down] Removing IDENTITY config: $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf"
+echo "[down] Removing IDENTITY nginx config: $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf"
 [ -f $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf ] && rm $NGINX_DIR/$BRANCH-identity.$DOMAIN.conf
 echo "[down] Restarting nginx"
 docker kill -s HUP $NGINX_CONTAINER_NAME
@@ -63,7 +63,7 @@ echo "[down] Stopping app for: $BRANCH"
 
 if [ -d $GBGLIS_DIR ]; then
     cd $GBGLIS_DIR
-    echo "[down] running docker-compose down, pwd: $PWD"
+    echo "[down] Executing docker-compose down, pwd: $PWD"
     [ -f $GBGLIS_DIR/docker-compose.* ] && docker-compose down
     echo "[down] Removing app dir: $GBGLIS_DIR"
     rm -rf $GBGLIS_DIR
