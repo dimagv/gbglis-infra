@@ -12,7 +12,7 @@ echo "[cleanup-cron] Clonning infra repo '$INFRA_REPO' to '$INFRA_DIR'"
 git clone $INFRA_REPO $INFRA_DIR
 
 echo "[cleanup-cron] Starting cleanup script"
-sudo /tmp/cleanup/cleanup.sh $DOMAIN $TFS_USER $TFS_TOKEN
+/tmp/cleanup/cleanup.sh $DOMAIN $TFS_USER $TFS_TOKEN
 
 echo "[cleanup-cron] Removing infra dir: $INFRA_DIR"
 rm -rf $INFRA_DIR
