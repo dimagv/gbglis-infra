@@ -162,11 +162,11 @@ create_nginx_config() {
     echo ""
 }
 
-echo "[up] Creating WEB config"
+echo "[up] Creating WEB nginx config"
 create_nginx_config $BRANCH $WEB_HOST_PORT
-echo "[up] Creating API config"
+echo "[up] Creating API nginx config"
 create_nginx_config $BRANCH-api $API_HOST_PORT
-echo "[up] Creating IDENTITY config"
+echo "[up] Creating IDENTITY nginx config"
 create_nginx_config $BRANCH-identity $IDENTITY_HOST_PORT
 
 echo "[up] Restarting nginx"
