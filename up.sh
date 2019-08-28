@@ -27,7 +27,7 @@ echo "[0] UP START"
 echo "[1] Сhecking existence of the job: $GBGLIS_JOB"
 JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_TOKEN)
 if [[ $JOB_STATUS_CODE -eq 404 ]]; then
-    echo "[1] Job doesn't exist: $GBGLIS_JOB"
+    echo "[1] ERROR: Job doesn't exist: $GBGLIS_JOB"
     exit 1
 fi
 echo "[1] OK"
@@ -48,7 +48,7 @@ random_port() {
 }
 
 if [ -d "$GBGLIS_DIR/$BRANCH" ]; then
-    echo "[2] Dir already exists: $GBGLIS_DIR/$BRANCH"
+    echo "[2] ERROR: Dir already exists: $GBGLIS_DIR/$BRANCH"
     exit 1
 fi
 
@@ -92,6 +92,24 @@ echo "[3] Triggering job: $GBGLIS_JOB"
 
 apt update -qq && apt install -y -qq jq
 
+COMPUTER_INFO=`curl -X GET $JENKINS_URL/computer/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null`
+TOTAL_EXECUTORS=`echo $COMPUTER_INFO | jq .totalExecutors`
+echo "total: $TOTAL_EXECUTORS"
+BUSY_EXECUTORS=`echo $COMPUTER_INFO | jq .busyExecutors`
+echo "total: $BUSY_EXECUTORS"
+
+# echo -n "[3] Waiting executors"
+# while true; do
+        
+#         if [[ $GBGLIS_JOB_STATUS_CODE -eq 404 ]]; then
+#                 echo -n "."
+#                 sleep 2
+#         else
+#                 break
+#         fi
+# done
+# echo ""
+
 GBGLIS_JOB_BUILD_ID=`curl -X GET $GBGLIS_JOB/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq '.nextBuildNumber'`
 curl -X POST "$GBGLIS_JOB/build" -u $JENKINS_USER:$JENKINS_TOKEN
 echo "[3] Starting Job:$GBGLIS_JOB with Build number: $GBGLIS_JOB_BUILD_ID"
@@ -123,7 +141,7 @@ echo ""
 
 GBGLIS_JOB_STATUS=`curl -X GET $GBGLIS_JOB/$GBGLIS_JOB_BUILD_ID/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2> /dev/null | jq -r '.result'`
 if [ "$GBGLIS_JOB_STATUS" != "SUCCESS" ]; then
-    echo "[3] Job failed, status: $GBGLIS_JOB_STATUS"
+    echo "[3] ERROR: Job failed, status: $GBGLIS_JOB_STATUS"
     exit 1
 fi
 
@@ -194,7 +212,7 @@ EOF
 
 HOOK_STATUS_CODE=$(curl -s -H "Accept: application/json; api-version=1.0" -H "Content-Type:application/json" --data "$(service_hook_data)" -XPOST -u :$TFS_TOKEN $HOOK_URL)
 if [[ $HOOK_STATUS_CODE -eq 404 ]]; then
-    echo "[5] Can't create service hook: $HOOK_STATUS_CODE"
+    echo "[5] ERROR: Can't create service hook: $HOOK_STATUS_CODE"
     exit 1
 fi
 echo "[5] OK"
