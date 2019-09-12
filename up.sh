@@ -19,7 +19,7 @@ GBGLIS_DIR="/home/ironjab/gbglis"
 NGINX_DIR="/home/ironjab/nginx/conf.d"
 NGINX_CONTAINER_NAME="global-nginx"
 GBGLIS_JOB="$JENKINS_URL/job/GBGLIS/job/$BRANCH"
-INFRA_DIR="/tmp/up"
+INFRA_DIR=$(dirname "$(readlink -f "$0")") 
 
 echo "[up] START"
 
