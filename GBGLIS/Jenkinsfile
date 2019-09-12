@@ -1,3 +1,5 @@
+def shouldBuild = true
+
 pipeline {
     agent any
 
@@ -17,14 +19,23 @@ pipeline {
         DOMAIN = 'gbglis.xyz'
     }
 
+    parameters {
+        booleanParam(name: 'FORCE_BUILD', defaultValue: false, description: "Ignore [ci-skip] commit prefix")
+    }
+
     stages {
         stage('Prepare') {
             steps {
+                script {    
+                    shouldBuild = params.FORCE_BUILD || sh(script: "git log -1 | grep '.*\\[ci-skip\\].*'", returnStatus: true) 
+                }
+
                 checkout scm
             }
         }
 
         stage('Parallel Build') {
+            when { expression { shouldBuild } }
             parallel {
                 stage('Build/Push API') {
                     steps {
@@ -45,7 +56,7 @@ pipeline {
                 stage('Build/Push WEB') {
                     steps {
                         script {
-                            // docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "--build-arg DOMAIN=${DOMAIN} --build-arg BRANCH=${env.BRANCH_NAME} ./LIS.Web")
+                            //docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "--build-arg DOMAIN=${DOMAIN} --build-arg BRANCH=${env.BRANCH_NAME} ./LIS.Web")
                             docker.build("${REPO_WEB}:${env.BRANCH_NAME}", "./LIS.Web")
                         }
                     }
@@ -54,6 +65,7 @@ pipeline {
         }
 
         stage('Deploy') {
+            when { expression { shouldBuild } }
             steps {
                 sshagent (credentials: ["${DEPLOY_HOST}"]) {
                     sh "ssh -o StrictHostKeyChecking=no -l ironjab ${DEPLOY_HOST} ' \
