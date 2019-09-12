@@ -121,7 +121,7 @@ done
 echo ""
 
 GBGLIS_JOB_BUILD_ID=$(curl -X GET $GBGLIS_JOB/api/json -u $JENKINS_USER:$JENKINS_TOKEN 2>/dev/null | jq '.nextBuildNumber')
-curl -X POST "$GBGLIS_JOB/build" -u $JENKINS_USER:$JENKINS_TOKEN
+curl -X POST "$GBGLIS_JOB/buildWithParameters?FORCE_BUILD=true" -u $JENKINS_USER:$JENKINS_TOKEN
 echo "[up] Starting Job:$GBGLIS_JOB with Build number: $GBGLIS_JOB_BUILD_ID"
 
 # Wait until the build is up and running
