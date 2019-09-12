@@ -25,6 +25,24 @@ echo "[up] START"
 
 # [1] CHECK JOB
 #############################################################################################
+echo "[up] Validate branch name"
+
+urlencode() {
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c"
+        esac
+    done
+}
+
+if [ $BRANCH != $(urlencode $BRANCH) ]; then
+        echo "[up] ERROR: INVALID BRANCH NAME: $BRANCH"
+        exit 1
+fi
+
 echo "[up] Сhecking existence of the job: $GBGLIS_JOB"
 JOB_STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" $GBGLIS_JOB/api/json --user $JENKINS_USER:$JENKINS_TOKEN)
 if [[ $JOB_STATUS_CODE -eq 404 ]]; then
