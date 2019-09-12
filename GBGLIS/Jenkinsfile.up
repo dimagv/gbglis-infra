@@ -29,7 +29,7 @@ pipeline {
         stage('Copy scripts') {
             steps {
                 sshagent (credentials: ["${DEPLOY_HOST}", "tfs"]) {
-                    sh "scp -o StrictHostKeyChecking=no -r ./infra ironjab@${DEPLOY_HOST}:/tmp/up"
+                    sh "scp -o StrictHostKeyChecking=no -r ./infra ironjab@${DEPLOY_HOST}:/tmp/up-${env.BRANCH_NAME}"
                 }
             }
         }
@@ -46,7 +46,7 @@ pipeline {
 
                     sshagent (credentials: ["${DEPLOY_HOST}"]) {    
                         sh "ssh -o StrictHostKeyChecking=no -l ironjab ${DEPLOY_HOST} ' \
-                            sudo /tmp/up/up.sh ${env.BRANCH_NAME} ${DOMAIN} $tfsUser $tfsPAT \
+                            sudo /tmp/up-${env.BRANCH_NAME}/up.sh \"${env.BRANCH_NAME}\" ${DOMAIN} $tfsUser $tfsPAT \
                         '"
                     }
                 }
@@ -58,13 +58,13 @@ pipeline {
         always { 
             sshagent (credentials: ["${DEPLOY_HOST}"]) {    
                 sh "ssh -o StrictHostKeyChecking=no -l ironjab ${DEPLOY_HOST} ' \
-                    rm -rf /tmp/up \
+                    rm -rf /tmp/up-${env.BRANCH_NAME} \
                 '"
             }  
         }
         
-        failure { 
-            build "/GBGLIS-DOWN/${env.BRANCH_NAME}"
-        }
+        //failure { 
+        //    build "/GBGLIS-DOWN/${env.BRANCH_NAME}"
+        //}
     }
 }
