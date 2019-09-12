@@ -210,7 +210,8 @@ service_hook_data() {
     "serverBaseUrl": "$JENKINS_URL",
     "username": "$JENKINS_USER",
     "useTfsPlugin": "built-in",
-    "password": "$JENKINS_TOKEN"
+    "password": "$JENKINS_TOKEN",
+    "buildParameterized": "true"
   },
 }
 EOF
