@@ -15,9 +15,9 @@ echo "[cleanup] START"
 
 echo "[cleanup] Checking branches"
 REMOVED_BRANCHES=()
-for dir in $GBGLIS_DIR/*/ ; do
-    BRANCH=`basename $dir`
-    BRANCH_EXISTS=`curl -s -XGET ${BASE_URL}_apis/git/repositories/${REPOSITORY_ID}/refs?filter=heads/$BRANCH -u :$TFS_TOKEN | jq ".value[] | select(.name==\"refs/heads/$BRANCH\")"`
+for dir in $GBGLIS_DIR/*/; do
+    BRANCH=$(basename $dir)
+    BRANCH_EXISTS=$(curl -s -XGET ${BASE_URL}_apis/git/repositories/${REPOSITORY_ID}/refs?filter=heads/$BRANCH -u :$TFS_TOKEN | jq ".value[] | select(.name==\"refs/heads/$BRANCH\")")
     if [[ ! $BRANCH_EXISTS ]]; then
         REMOVED_BRANCHES+=($BRANCH)
     fi
@@ -29,7 +29,7 @@ if [[ ! $REMOVED_BRANCHES ]]; then
 fi
 
 echo "[cleanup] Need to destroy ENVs for branches: ${REMOVED_BRANCHES[@]}"
-for BRANCH in ${REMOVED_BRANCHES[*]} ; do
+for BRANCH in ${REMOVED_BRANCHES[*]}; do
     echo "[cleanup] Destroying for: $BRANCH"
     $INFRA_DIR/down.sh $BRANCH $DOMAIN $TFS_USER $TFS_TOKEN
 done

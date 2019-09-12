@@ -1,4 +1,4 @@
-version: '2.2'
+version: "2.2"
 services:
   web:
     image: gbglis/gbglis-web:${BRANCH_NAME}

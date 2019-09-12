@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
   jenkins:
     image: gbglis/jenkins:lts-docker18.09.2
